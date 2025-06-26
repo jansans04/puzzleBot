@@ -53,6 +53,8 @@ Controladors de motor: Cada motor pas a pas està connectat a un driver de contr
 
 Interfície de control: El sistema pot rebre instruccions preprogramades per resoldre un puzle determinat, i l’arquitectura està pensada per permetre fàcilment una ampliació cap a un sistema més intel·ligent o interactiu.
 
+## Visió artificial
+El robot incorpora una càmera Pi connectada a la Raspberry Pi. Aquesta càmera s’utilitza per detectar la posició i orientació de les peces del puzle sobre la superfície de treball. Mitjançant tècniques bàsiques de processament d’imatge, el sistema pot identificar quines peces estan disponibles i on es troben, facilitant la seva manipulació de manera automatitzada.
 
 # Arquitectura del projecte
 
@@ -92,6 +94,10 @@ A continuació es detallen els components utilitzats per a la construcció del r
 1 × Raspberry Pi (model 3B, 4 o similar)
 
 - Unitat de control principal
+
+1 × Càmera Pi per Raspberry
+
+- Per a la detecció de peces mitjançant visió artificial
 
 Cables, connectors i protoboard
 
