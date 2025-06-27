@@ -139,40 +139,41 @@ Tornilleria, separadors i femelles
 
 Base de treball
 
-# Software
+# Software  
 
-Tota la part lògica del projecte viu dins `src/`.  
-S’ha estructurat en **mòduls clarament separats**, cadascun amb una responsabilitat única i delimitada:
+La carpeta **`src/`** conté tot el codi; està organitzada en mòduls auto-contenuts.  
 
-| Carpeta / Fitxer | Què fa? |
-|------------------|---------|
-| **main.py** | Punt d’entrada (Raspberry). Interpreta arguments (`--offline`) i arrenca la resta de subsistemes. |
-| **control.py** | Mòdul de **Control** (FSM). Rep un *plan* (llista d’ordres), invoca els mètodes de `movement.py`, escolta `feedback.py` i envia estats al PC. |
-| **movement.py** | Mòdul de **Moviment**: gestiona tots els actuadors (X-Y NEMA-17, Z 28BYJ-48, servo, bomba). Inclou homing, acceleració i inter­fície d’alt nivell (`MovementSystem`). |
-| **feedback.py** | Mòdul de **Retroalimentació**. Fil de monitorització de finals de carrera, presòstat de buit i E-Stop; crida callbacks quan hi ha canvis. |
-| **planificació.py** | Mòdul de **Planificació**. Rep la posició inicial/final i les rotacions i genera un *plan* òptim (nearest-neighbour). |
-| **sockets/** | **Comunicació Pi ↔ PC** |
-| ├─ `config.py` | Paràmetres comuns: pins, IP, pitch d’husillo, etc. Es poden sobreescriure amb variables d’entorn. |
-| ├─ `socket_client_pi.py` | Client TCP que corre a la Pi. Envia `HELLO` i `STATUS`, rep plans (`PLAN`) i els posa en cua perquè `control.py` els executi. |
-| └─ `socket_server_pc.py` | Servidor TCP que corre al PC. Accepta connexions de la Pi, genera el plan amb el mòdul de visió/greedy i l’envia. |
-| **vision/** | Mòdul de **Percepció** (execució al PC) |
-| ├─ `main.py` | Script mestre: carrega imatge, segmenta peces, calcula orientació i desa `piezas_info.json`. |
-| ├─ `segment_pieces.py` | Segmentació amb OpenCV i guardat de ROIs a `vision/pieces/`. |
-| ├─ `normalize_pieces.py` | Normalitza mida/il·luminació de cada ROI per al solver. |
-| ├─ `solve_puzzle_borders.py` | Busca les vores, orienta el puzle i produeix `solution_greedy.json/png`. |
-| ├─ `piezas_info.json` | Fitxer generat amb la posició i angle actual de cada peça. |
-| ├─ `solution_greedy.json` | Sortida del solver: posició final i rotació objectiu. |
-| └─ carpetes `in/`, `out_piezas/`, `pieces/` | Entrades i sortides intermèdies del pipeline de visió. |
+| Carpeta / Fitxer | Paper dins el sistema |
+|------------------|-----------------------|
+| **main.py** | Punt d’entrada de la Raspberry. Modes: online (`socket`) i offline (`plan.json`). |
+| **control.py** | FSM central: llegeix plans, invoca `movement.py`, escolta `feedback.py` i envia estats al PC. |
+| **movement.py** | Mòdul **Moviment**. Drivers dels 2 NEMA-17 (X), NEMA-17 (Y), 28BYJ-48 (Z), servo i bomba. Inclou rampes i homing. |
+| **feedback.py** | Mòdul **Retroalimentació**. Fil que vigila finals de carrera, presòstat de buit i E-Stop; dispara callbacks al Control. |
+| **planificació.py** | Mòdul **Planificació**. Construeix la llista de pick / place a partir de les matrius de l’estat inicial/final (greedy NN). |
+| **configuracio.py** | **Paràmetres clàssics** dels motors (pins DIR/STEP, micro-stepping, pas d’husillo). El mantindrem per compatibilitat amb el codi antic. |
+| **sockets/** | Comunicació Pi ↔ PC |
+| ├─ `config.py` | Config global (*pins*, IP PC, paràmetres mecànics). Es pot sobreescriure amb variables d’entorn. |
+| ├─ `socket_client_pi.py` | Client TCP (corre a la Pi). Envia `HELLO` i `STATUS`, rep `PLAN`. |
+| └─ `socket_server_pc.py` | Servidor TCP (corre al PC). Rep `HELLO`, genera el plan amb els mòduls de visió/greedy, l’envia i monitora l’estat. |
+| **vision/** | Mòdul **Percepció** (PC) |
+| ├─ `main.py` | Pipeline complet de visió. |
+| ├─ `segment_pieces.py` | Segmentació de peces amb OpenCV. |
+| ├─ `normalize_pieces.py` | Normalitza imatges per al solver. |
+| ├─ `solve_puzzle_borders.py` | Detecta contorn, orienta tauler. |
+| ├─ `piezas_info.json` | Sortida: posició i angle actual de cada peça. |
+| ├─ `solution_greedy.json` | Resultat del solver: posició final/rotació. |
+| └─ carpetes `in/`, `out_piezas/`, `pieces/` | Entrades i sortides intermèdies de visió. |
 
-**Flux complet resumit**
+**Flux resumit**
 
-1. **Visió (PC)** → detecta peces, genera `solution_greedy.json`.  
-2. **socket_server_pc.py** → converteix això en `PLAN` i l’envia a la Pi.  
-3. **socket_client_pi.py** → passa el plan a `control.py`.  
-4. **control.py** → executa cada pas amb `movement.py` i vigila `feedback.py`.  
-5. Els estats (`READY`, `DONE`, `FINISHED`, `ERROR`) retornen al PC pel mateix socket.
+1. **Visió (PC)**: detecta peces ⇒ `solution_greedy.json`.  
+2. **socket_server_pc.py**: tradueix a `PLAN` i l’envia a la Pi.  
+3. **socket_client_pi.py**: rep `PLAN` i l’entrega a `control.py`.  
+4. **control.py**: executa ordres amb `movement.py`, vigila `feedback.py`.  
+5. Estat (`READY`, `DONE`, `FINISHED`, `ERROR`) torna al PC via socket.
 
-Aquesta separació facilita depurar cada bloc de manera independent i substituir components (p. ex. un altre algoritme de visió) sense tocar la resta.
+Aquesta arquitectura modular permet canviar qualsevol bloc (visió, algoritme, mecànica) sense reescriure la resta del codi.
+
 
 
 # Resultats
