@@ -142,6 +142,61 @@ Base de treball
 
 # Software
 
+El sistema de control del PuzzleBot es basa en una arquitectura de programari modular, totalment desenvolupada en Python i pensada per ser executada sobre una Raspberry Pi. El codi cobreix tres àrees principals: **visió artificial**, **control de moviment** i **coordinació de la manipulació**.
+
+## Estructura general
+
+El repositori s’organitza en diferents subcarpetes i scripts, cadascun amb una funcionalitat ben definida:
+
+## Estructura del programari per mòduls
+
+El programari del PuzzleBot segueix una arquitectura modular basada en els següents components, inspirats directament en la divisió funcional del sistema:
+
+- **Mòdul de Percepció**
+  - Equival a la carpeta `visio/`
+  - S’encarrega de capturar la imatge amb la càmera, processar-la, segmentar les peces del puzle i identificar-ne la posició, l’orientació i la forma de cada costat. Aquest mòdul proporciona tota la informació visual necessària per la resta del sistema.
+
+- **Mòdul de Resolució**
+  - Inclou la lògica de resolució dins de `visio/` i part del `main.py`
+  - Utilitza la informació del mòdul de percepció per calcular com encaixar totes les peces del puzle: determina la solució òptima i genera una seqüència d’accions per col·locar cada peça al seu lloc.
+
+- **Mòdul de Planificació**
+  - Integrat en el flux de `main.py`
+  - Rep la solució del puzle i transforma cada acció planificada (agafar, moure, girar, deixar) en una trajectòria concreta per als motors del robot, planificant tot el moviment des de l’inici fins a la posició final.
+
+- **Mòdul de Moviment**
+  - Equival a la carpeta `control/`
+  - Gestiona el moviment físic dels motors pas a pas dels eixos X i Y, el micromotor de l’eix Z i el servomotor de rotació. S’encarrega d’executar les ordres de moviment planificades i comprovar la posició amb els sensors de final de cursa.
+
+- **Mòdul de Control**
+  - Implementat principalment al `main.py`
+  - Orquestra i sincronitza tots els altres mòduls. Rep informació dels sensors, gestiona l’ordre d’execució de cada acció (moviment, succió, col·locació), i assegura la coordinació global entre hardware i software.
+
+- **Mòdul de Retroalimentació**
+  - Forma part del bucle principal de control i monitorització al `main.py`
+  - Supervisa l’estat dels motors, sensors i actuadors en tot moment. Detecta errors, ajusta el comportament segons la resposta del sistema i permet repetir accions o corregir desviacions si es produeix alguna incidència durant el procés.
+
+
+## Funcionament del programari
+
+1. **Captura i processament d’imatge:**  
+   El sistema utilitza la càmera Pi per obtenir una imatge de la zona de treball. Aquesta imatge es processa mitjançant OpenCV i NumPy per identificar totes les peces de puzle, determinar-ne la posició, l’orientació i la forma de cada costat. S’apliquen tècniques de segmentació, normalització i classificació de costats (vegeu apartat de visió artificial).
+
+2. **Resolució del puzle (matching):**  
+   A partir de la informació de les peces identificades, el sistema calcula la solució del puzle:  
+   - Si el puzle és conegut (sintètic), es fa servir un algoritme de matching basat en descriptors geomètrics i de color per decidir la posició de cada peça.
+   - El sistema genera una llista ordenada d’accions (pickup, move, rotate, drop) per a cada peça, indicant la posició d’origen i la posició final sobre el tauler.
+
+3. **Generació de trajectòries i control de motors:**  
+   Les accions generades es tradueixen a moviments concrets dels motors X, Y i Z, tenint en compte el calibratge inicial amb els finals de cursa. Els motors s’accionen utilitzant una llibreria de control per GPIO o mitjançant comandes G-code simplificades.
+
+4. **Manipulació i col·locació de les peces:**  
+   El sistema activa la ventosa i la bomba de succió per agafar la peça, la transporta fins a la posició correcta, ajusta la seva orientació amb el servomotor si cal, i allibera la peça exactament a la seva posició final. Tot aquest procés es repeteix fins que el puzle està complet.
+
+5. **Seguretat i comprovacions:**  
+   El programari incorpora comprovacions de posició, temps d’espera i feedback dels sensors per garantir que no es produeixin col·lisions ni moviments fora dels límits establerts.
+
+
 
 
 # Resultats
