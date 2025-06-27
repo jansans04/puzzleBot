@@ -146,6 +146,14 @@ Base de treball
 
 # Resultats
 
+Aquest projecte ha representat un repte molt més gran del que inicialment imaginàvem. Tot i que l'objectiu semblava clar i assolible, el procés de disseny, construcció i integració del sistema ha resultat ser molt més complex, amb múltiples dificultats tant tècniques com logístiques.
+
+Durant el desenvolupament ens hem trobat amb problemes inesperats: des d’errors mecànics i electrònics, fins a limitacions en la coordinació entre el maquinari i el programari. Això ens ha obligat a adaptar-nos constantment, buscar solucions creatives i modificar diversos aspectes del disseny inicial.
+
+Tot i aquestes complicacions, estem molt satisfets amb el resultat final. El robot que hem aconseguit construir s’ajusta molt al que havíem plantejat al principi del projecte: és capaç de detectar peces, moure’s dins del pla de treball, manipular les peces amb la ventosa i col·locar-les correctament a la seva posició.
+
+A més, hem pogut dur a terme els tests i les proves pràctiques que ens havíem proposat, i aquests han demostrat que el sistema és funcional i té una base sòlida per a futures millores. Més enllà del resultat tècnic, aquest projecte ha estat una experiència d’aprenentatge intens i realista sobre el treball en equip, la resolució de problemes i la integració de sistemes complexos.
+
 
 # Dificultats i solucions
 Al llarg del desenvolupament del projecte, ens hem trobat amb diversos reptes tant en la fase de disseny com en la d'integració i posada en marxa del robot. A continuació es descriuen les principals dificultats:
