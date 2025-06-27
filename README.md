@@ -57,7 +57,15 @@ Interfície de control: El sistema pot rebre instruccions preprogramades per res
 El robot incorpora una càmera Pi connectada a la Raspberry Pi. Aquesta càmera s’utilitza per detectar la posició i orientació de les peces del puzle sobre la superfície de treball. Mitjançant tècniques bàsiques de processament d’imatge, el sistema pot identificar quines peces estan disponibles i on es troben, facilitant la seva manipulació de manera automatitzada.
 
 # Arquitectura del projecte
+L’arquitectura del projecte PuzzleBot està organitzada en diversos nivells funcionals que es comuniquen de forma coordinada per assolir l’objectiu final: resoldre un puzle de manera autònoma. Aquesta estructura modular permet dividir clarament les responsabilitats entre el maquinari, el programari i la interacció entre ambdós.
 
+En el nivell físic, el sistema està format per una base mecànica que proporciona moviment precís en els eixos X, Y i Z, juntament amb un conjunt de dispositius per manipular les peces (ventosa, bomba de succió i servomotor de rotació). Aquests elements són accionats mitjançant controladors electrònics que responen a ordres directes de la Raspberry Pi, la qual actua com a cervell del robot.
+
+El programari s'encarrega de coordinar les diferents accions del sistema. A partir d’una imatge inicial del puzle, s’aplica visió artificial per localitzar les peces i generar una seqüència d’accions per col·locar-les. Aquestes accions es transformen en moviments concrets, enviats des de la Raspberry Pi als diversos actuadors mitjançant els GPIO i els drivers corresponents.
+
+A nivell d'integració, el sistema es basa en una arquitectura lineal i seqüencial, però deixa oberta la porta a futures ampliacions cap a sistemes més intel·ligents o paral·lels. Tots els components comparteixen una alimentació comuna i una referència espacial establerta mitjançant sensors de final de cursa, que permeten un calibratge automàtic i fiable.
+
+En conjunt, l’arquitectura del PuzzleBot reflecteix una combinació entre precisió mecànica, simplicitat electrònica i flexibilitat programàtica, que facilita tant el desenvolupament com la futura extensió del projecte.
 
 # Materials i components
 A continuació es detallen els components utilitzats per a la construcció del robot, dividits en tres grans grups: electrònica, mecànica i altres elements auxiliars.
@@ -135,8 +143,6 @@ Base de treball
 # Software
 
 
-# Instal·lació i us
-
 
 # Resultats
 
@@ -155,9 +161,6 @@ Micromotor trencat: Durant les proves, el micromotor encarregat de l’eix Z es 
 Cables cremats i connexions defectuoses: Alguns cables es van sobreescalfar i fondre, provocant interrupcions en el subministrament d’energia o en la transmissió de senyals. Això ens va portar a revisar completament les connexions i substituir diversos cables.
 
 Coordinació de motors: Aconseguir que tots els motors funcionessin simultàniament i de manera estable va ser un procés llarg. Vam tenir problemes tant amb el codi de control com amb l’alimentació elèctrica, que inicialment no era suficient per alimentar tot el sistema alhora.
-
-
-# Treball futur / millores
 
 
 # Autors
